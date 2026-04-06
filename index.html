@@ -43,12 +43,17 @@
   // 地図の初期表示（広島周辺）
   const map = L.map("map").setView([34.4, 132.4], 12);
 
-  // 国土地理院地図
+/********************
+   * 地図初期化
+   ********************/
+  const map = L.map("map").setView(
+    [CENTER_LAT, CENTER_LNG],
+    ZOOM_LEVEL
+  );
+
   L.tileLayer(
     "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
-    {
-      attribution: "地図情報 © 国土地理院"
-    }
+    { attribution: "地図情報 © 国土地理院" }
   ).addTo(map);
 
   // --- ここから追加 ---
