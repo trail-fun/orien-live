@@ -52,40 +52,4 @@
 </script>
 
 </body>
-</html>  // マーカー専用レイヤー
-  const markerLayer = L.layerGroup().addTo(map);
-
-  /********************
-   * マーカー更新処理
-   ********************/
-  function loadMarkers() {
-    fetch(DATA_URL + "?t=" + Date.now()) // キャッシュ回避
-      .then(response => response.json())
-      .then(data => {
-        // 既存マーカーを全削除
-        markerLayer.clearLayers();
-
-        data.forEach(c => {
-          L.marker([c.lat, c.lng])
-            .addTo(markerLayer)
-            .bindPopup(
-              `<strong>${c.name}</strong><br>
-               最終更新：${c.time}`
-            );
-        });
-      })
-      .catch(error => {
-        console.error("位置データ取得エラー", error);
-      });
-  }
-
-  /********************
-   * 初回読み込み & 自動更新
-   ********************/
-  loadMarkers();                         // ページ表示時
-  setInterval(loadMarkers, REFRESH_INTERVAL); // 定期更新
-  
-</script>
-
-</body>
 </html>
