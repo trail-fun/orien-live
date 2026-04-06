@@ -56,6 +56,10 @@
     { attribution: "地図情報 © 国土地理院" }
   ).addTo(map);
 
+
+  // マーカー専用レイヤー
+  const markerLayer = L.layerGroup().addTo(map);
+
   // --- ここから追加 ---
   fetch("crew_locations.json")
     .then(res => res.json())
