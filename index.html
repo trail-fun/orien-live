@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html lang="ja">
-https://unpkg.com/leaflet@1.9.4/dist/leaflet.css https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
+<head>
+  <meta charset="utf-8" />
+  <title>orien-live｜クルー位置マップ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Leaflet CSS -->
+  https://unpkg.com/leaflet@1.9.4/dist/leaflet.css
+
+  <!-- Leaflet JS -->
+  https://unpkg.com/leaflet@1.9.4/dist/leaflet.js  </script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
 <body>
 
 <div id="map"></div>
 
 <script>
-  /***********************
-   * 設定値
-   ***********************/
-  const CENTER_LAT = 34.4;   // 広島付近
-  const CENTER_LNG = 132.4;
-  const ZOOM_LEVEL = 12;
-
-  // ★ 後でGASのJSON URLに差し替える
-  const DATA_URL = "crew_locations.json";
-
-  // 何分更新がなければ「古い」と判断するか
-  const OLD_MINUTES = 30;
-
-  // 地図更新間隔（ミリ秒）
-  const REFRESH_INTERVAL = 60000; // 1分
-
-
-  /***********************
-   * 地図初期化
-   ***********************/
-  const map = L.map("map").setView(
-    [CENTER_LAT, CENTER_LNG],
-    ZOOM_LEVEL
-  );
+  // 地図の初期表示（広島周辺）
+  const map = L.map("map").setView([34.4, 132.4], 12);
 
   // 国土地理院地図
   L.tileLayer(
@@ -40,49 +38,10 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.css https://unpkg.com/leaflet@1.9.4
     }
   ).addTo(map);
 
-  const markerLayer = L.layerGroup().addTo(map);
-
-
-  /***********************
-   * クルー位置を更新
-   ***********************/
-  function updateMap() {
-    fetch(DATA_URL + "?t=" + Date.now())
-      .then(res => res.json())
-      .then(data => {
-        markerLayer.clearLayers();
-
-        const now = new Date();
-
-        data.forEach(c => {
-          const updated = new Date(c.time);
-          const diffMin = (now - updated) / 60000;
-
-          const marker = L.marker([c.lat, c.lng]);
-
-          // 更新が古い場合は色を変える
-          if (diffMin > OLD_MINUTES) {
-            marker.getElement?.()?.classList.add("updated-old");
-          }
-
-          marker.bindPopup(
-            `<strong>${c.name}</strong><br>
-             最終更新：${updated.toLocaleTimeString()}`
-          );
-
-          marker.addTo(markerLayer);
-        });
-      })
-      .catch(err => {
-        console.error("位置データ取得失敗", err);
-      });
-  }
-
-  // 初回実行
-  updateMap();
-
-  // 定期更新
-  setInterval(updateMap, REFRESH_INTERVAL);
+  // テスト用マーカー
+  L.marker([34.4, 132.4])
+    .addTo(map)
+    .bindPopup("テストクルー");
 </script>
 
 </body>
