@@ -1,3 +1,5 @@
+地図上にクルー位置を表示
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -27,61 +29,28 @@
 <div id="map"></div>
 
 <script>
-  /********************
-   * 設定
-   ********************/
-  const CENTER_LAT = 34.4;
-  const CENTER_LNG = 132.4;
-  const ZOOM_LEVEL = 12;
+  // 地図の初期表示（広島周辺）
+  const map = L.map("map").setView([34.4, 132.4], 12);
 
-  const DATA_URL = "crew_locations.json";
-  const REFRESH_INTERVAL = 100; // 1分（ミリ秒）
-
-  /********************
-   * 地図初期化
-   ********************/
-  const map = L.map("map").setView(
-    [CENTER_LAT, CENTER_LNG],
-    ZOOM_LEVEL
-  );
-
+  // 国土地理院地図
   L.tileLayer(
     "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
-    { attribution: "地図情報 © 国土地理院" }
+    {
+      attribution: "地図情報 © 国土地理院"
+    }
   ).addTo(map);
 
-  // マーカー専用レイヤー
-  const markerLayer = L.layerGroup().addTo(map);
-
-  /********************
-   * マーカー更新処理
-   ********************/
-  function loadMarkers() {
-    fetch(DATA_URL + "?t=" + Date.now()) // キャッシュ回避
-      .then(response => response.json())
-      .then(data => {
-        // 既存マーカーを全削除
-        markerLayer.clearLayers();
-
-        data.forEach(c => {
-          L.marker([c.lat, c.lng])
-            .addTo(markerLayer)
-            .bindPopup(
-              `<strong>${c.name}</strong><br>
-               最終更新：${c.time}`
-            );
-        });
-      })
-      .catch(error => {
-        console.error("位置データ取得エラー", error);
+  // --- ここから追加 ---
+  fetch("crew_locations.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(c => {
+        L.marker([c.lat, c.lng])
+          .addTo(map)
+          .bindPopup(c.name);
       });
-  }
-
-  /********************
-   * 初回読み込み & 自動更新
-   ********************/
-  loadMarkers();                         // ページ表示時
-  setInterval(loadMarkers, REFRESH_INTERVAL); // 定期更新
+    });
+  
 </script>
 
 </body>
