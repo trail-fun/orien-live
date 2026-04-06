@@ -38,6 +38,17 @@
     }
   ).addTo(map);
 
+  // --- ここから追加 ---
+  fetch("crew_locations.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(c => {
+        L.marker([c.lat, c.lng])
+          .addTo(map)
+          .bindPopup(c.name);
+      });
+    });
+  
   // テスト用マーカー
   L.marker([34.4, 132.4])
     .addTo(map)
