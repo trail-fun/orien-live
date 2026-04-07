@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width">
+</head>
+<body>
+
+<button onclick="sendLocation()">位置を送信</button>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxiFsnLQf71Tt9SGZbsSzrcOmQFYuSjafxbw61iMPrrUpUNfNX7izWzkR2lG78sa9Rp/exec";
+
+function sendLocation() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        name: "クルーA",
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      })
+    })
+    .then(() => alert("送信しました"))
+    .catch(err => alert("エラー"));
+  });
+}
+</script>
+
+</body>
+</html>
