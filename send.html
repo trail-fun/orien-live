@@ -12,6 +12,14 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxiFsnLQf71Tt9SGZbsSzrc
 
 function sendLocation() {
   navigator.geolocation.getCurrentPosition(pos => {
+fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(data)
+});
+/*    
     fetch(API_URL, {
       method: "POST",
       body: JSON.stringify({
@@ -20,6 +28,7 @@ function sendLocation() {
         lng: pos.coords.longitude
       })
     })
+*/
     .then(() => alert("送信しました"))
 .catch(err => {
   console.error("❌ エラー内容", err);
