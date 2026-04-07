@@ -8,7 +8,7 @@
 <button onclick="sendLocation()">位置を送信</button>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwmUePuEdRvPA_9Z8Tk5S8k3bJqRatsXOb5gbL4BCXjDm4VJPO5XGW-nM2yz6hJAz0y/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzBaqYts5rZf-Rg6c60PjAGroc5iL2HB3H5goNWT-ib67LawR8FUYnBWSlB0iSL3TBJ/exec";
 
 function sendLocation() {
   navigator.geolocation.getCurrentPosition(
@@ -19,28 +19,15 @@ function sendLocation() {
         lng: pos.coords.longitude
       };
 
-      fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("HTTP error " + res.status);
-        }
-        return res.text();
-      })
-      .then(text => {
-        console.log("✅ GAS response", text);
-        alert("送信しました");
-      })
-      .catch(err => {
-        console.error("❌ fetch エラー", err);
-        alert("エラーが発生しました。Consoleを確認してください");
-      });
-    },
+fetch(API_URL, {
+  method: "POST",
+  mode: "no-cors"
+})
+.then(() => alert("送信OK"))
+.catch(err => {
+  console.error(err);
+  alert("送信NG");
+});    },
     (err) => {
       console.error("❌ 位置取得エラー", err);
       alert("位置情報を取得できませんでした");
