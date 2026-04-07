@@ -21,7 +21,12 @@ function sendLocation() {
       })
     })
     .then(() => alert("送信しました"))
-    .catch(err => alert("エラー"));
+.catch(err => {
+  console.error("❌ エラー内容", err);
+  alert("エラーが発生しました。Consoleを確認してください");
+});
+/*    .catch(err => alert("エラー"));
+*/
   });
 }
 </script>
