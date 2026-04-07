@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+=<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
@@ -56,6 +56,41 @@
       attribution: "地図情報 © 国土地理院"
     }
   ).addTo(map);
+
+
+/**/
+  // マーカー専用レイヤー
+  const markerLayer = L.layerGroup().addTo(map);
+
+  /********************
+   * マーカー更新処理
+   ********************/
+  function loadMarkers() {
+    fetch(DATA_URL + "?t=" + Date.now()) // キャッシュ回避
+      .then(response => response.json())
+      .then(data => {
+        // 既存マーカーを全削除
+        markerLayer.clearLayers();
+
+        data.forEach(c => {
+          L.marker([c.lat, c.lng])
+            .addTo(markerLayer)
+            .bindPopup(
+              `<strong>${c.name}</strong><br>
+               最終更新：${c.time}`
+            );
+        });
+      })
+      .catch(error => {
+        console.error("位置データ取得エラー", error);
+      });
+  }
+/**/
+  
+
+
+
+
 
   // --- ここから追加 ---
   fetch("crew_locations.json")
