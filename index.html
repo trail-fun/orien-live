@@ -43,12 +43,6 @@
     ZOOM_LEVEL
   );
 
-
-/* 
-      // 地図の初期表示（広島周辺）
-  const map = L.map("map").setView([34.4, 132.4], 12);
-*/
-
   // 国土地理院地図
   L.tileLayer(
     "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
@@ -85,7 +79,6 @@
         console.error("位置データ取得エラー", error);
       });
   }
-/**/
   
   /********************
    * 初回読み込み & 自動更新
@@ -93,20 +86,6 @@
   loadMarkers();                         // ページ表示時
   setInterval(loadMarkers, REFRESH_INTERVAL); // 定期更新
 
-
-
-/*
-  // --- ここから追加 ---
-  fetch("crew_locations.json")
-    .then(res => res.json())
-    .then(data => {
-      data.forEach(c => {
-        L.marker([c.lat, c.lng])
-          .addTo(map)
-          .bindPopup(c.name);
-      });
-    });
-  */
 </script>
 
 </body>
