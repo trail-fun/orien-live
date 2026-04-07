@@ -87,11 +87,15 @@
   }
 /**/
   
+  /********************
+   * 初回読み込み & 自動更新
+   ********************/
+  loadMarkers();                         // ページ表示時
+  setInterval(loadMarkers, REFRESH_INTERVAL); // 定期更新
 
 
 
-
-
+/*
   // --- ここから追加 ---
   fetch("crew_locations.json")
     .then(res => res.json())
@@ -102,7 +106,7 @@
           .bindPopup(c.name);
       });
     });
-  
+  */
 </script>
 
 </body>
