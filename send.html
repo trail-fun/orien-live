@@ -11,32 +11,41 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxiFsnLQf71Tt9SGZbsSzrcOmQFYuSjafxbw61iMPrrUpUNfNX7izWzkR2lG78sa9Rp/exec";
 
 function sendLocation() {
-  navigator.geolocation.getCurrentPosition(pos => {
-fetch(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(data)
-});
-/*    
-    fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const data = {
         name: "クルーA",
         lat: pos.coords.latitude,
         lng: pos.coords.longitude
+      };
+
+      fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
       })
-    })
-*/
-    .then(() => alert("送信しました"))
-.catch(err => {
-  console.error("❌ エラー内容", err);
-  alert("エラーが発生しました。Consoleを確認してください");
-});
-/*    .catch(err => alert("エラー"));
-*/
-  });
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("HTTP error " + res.status);
+        }
+        return res.text();
+      })
+      .then(text => {
+        console.log("✅ GAS response", text);
+        alert("送信しました");
+      })
+      .catch(err => {
+        console.error("❌ fetch エラー", err);
+        alert("エラーが発生しました。Consoleを確認してください");
+      });
+    },
+    (err) => {
+      console.error("❌ 位置取得エラー", err);
+      alert("位置情報を取得できませんでした");
+    }
+  );
 }
 </script>
 
