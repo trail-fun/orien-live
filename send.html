@@ -19,17 +19,30 @@ function sendLocation() {
         lng: pos.coords.longitude
       };
 
-fetch(API_URL, {
-  method: "POST",
-  mode: "no-cors"
-})
-.then(() => alert("送信OK"))
-.catch(err => {
-  console.error(err);
-  alert("送信NG");
-});    },
+      fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("HTTP error " + res.status);
+        }
+        return res.text();
+      })
+      .then(text => {
+        console.log("✅ GAS response:", text);
+        alert("送信しました");
+      })
+      .catch(err => {
+        console.error("❌ fetch error:", err);
+        alert("送信に失敗しました（Consoleを確認）");
+      });
+    },
     (err) => {
-      console.error("❌ 位置取得エラー", err);
+      console.error("❌ 位置情報エラー:", err);
       alert("位置情報を取得できませんでした");
     }
   );
