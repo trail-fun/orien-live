@@ -21,6 +21,23 @@ function sendLocation() {
         lng: pos.coords.longitude
       };
 
+
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          name: "クルーA",
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        })
+      })
+        .then(() => alert("送信しました"))
+        .catch(e => {
+          console.error(e);
+          alert("送信失敗");
+        });
+
+      
+/*
       // レスポンスは読まない（Safari安定）
       fetch(API_URL, {
         method: "POST",
@@ -38,6 +55,7 @@ function sendLocation() {
         console.error("送信エラー:", err);
         alert("送信に失敗しました");
       });
+      */
     },
     (err) => {
       console.error("位置情報エラー:", err);
