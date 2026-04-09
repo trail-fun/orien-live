@@ -2,38 +2,92 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
+  <!-- スマホ表示を前提にしたビューポート設定 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>位置送信</title>
 </head>
 <body>
 
+<!-- ボタンを押すと sendLocation() 関数が実行される -->
 <button onclick="sendLocation()">位置を送信</button>
 
 <script>
+/*
+  ===== 設定 =====
+  Google Apps Script（GAS）の Webアプリ URL
+  /exec は「本番実行用エンドポイント」
+  ここに GET リクエストで位置情報を送信する
+*/
 const API_URL = "https://script.google.com/macros/s/AKfycbzjdbNRo_VGpVjDZ3S4bA5BPNOyWbrVXLFcbAyon_kym2L8yrpwe5uCKIw35vUiipCS/exec";
 
+/*
+  ===== 位置送信のメイン関数 =====
+  ・現在地を取得
+  ・GAS に送信
+*/
 function sendLocation() {
+
+  /*
+    navigator.geolocation.getCurrentPosition は
+    ブラウザ標準の位置情報取得 API
+
+    成功時と失敗時で処理を分けている
+  */
   navigator.geolocation.getCurrentPosition(
+
+    /*
+      ===== 成功時 =====
+      pos には位置情報オブジェクトが入る
+    */
     (pos) => {
+
+      /*
+        送信する URL を組み立てる
+        GET パラメータとして情報を付与
+      */
       const url =
         API_URL +
-        "?name=クルーA" +
-        "&lat=" + pos.coords.latitude +
-        "&lng=" + pos.coords.longitude +
-        "&t=" + Date.now();
-//デバッグ用
-      console.log(url)
 
-      // GET で送信（iOS Safari 最強）
+        // クルー名（固定値：クルーA）
+        "?name=クルーA" +
+
+        // 緯度（latitude）
+        "&lat=" + pos.coords.latitude +
+
+        // 経度（longitude）
+        "&lng=" + pos.coords.longitude +
+
+        // タイムスタンプ（キャッシュ防止・ログ用）
+        "&t=" + Date.now();
+
+      // ===== デバッグ用 =====
+      // 実際に送られるURLを確認したいときに有効化
+      // console.log(url);
+
+      /*
+        fetch() で HTTP リクエストを送信
+        ・GET リクエスト
+        ・iOS Safari で最も安定する方式
+        ・レスポンス内容は読まない
+      */
       fetch(url)
         .then(() => {
+          // 通信が完了したら成功とみなす
           alert("送信しました");
         })
         .catch(err => {
+          // 通信自体が失敗した場合
           console.error(err);
           alert("送信失敗");
         });
     },
+
+    /*
+      ===== 失敗時 =====
+      ・位置情報の使用を拒否された
+      ・GPSが取得できない
+      ・通信環境が悪い
+    */
     (err) => {
       console.error(err);
       alert("位置情報を取得できませんでした");
