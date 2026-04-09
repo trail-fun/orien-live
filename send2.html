@@ -21,7 +21,9 @@ function sendLocation() {
         "&lat=" + pos.coords.latitude +
         "&lng=" + pos.coords.longitude +
         "&t=" + Date.now();
-
+//デバッグ用
+      console.log(url)
+/*
       // GET で送信（iOS Safari 最強）
       fetch(url)
         .then(() => {
@@ -36,6 +38,7 @@ function sendLocation() {
       console.error(err);
       alert("位置情報を取得できませんでした");
     }
+*/
   );
 }
 </script>
