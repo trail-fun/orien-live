@@ -63,21 +63,20 @@ function sendLocation() {
       // ===== デバッグ用 =====
       // 実際に送られるURLを確認したいときに有効化
        console.log(url);
-      
+/*      
 fetch(url, {
   method: 'GET', // または 'POST'
   redirect: 'follow' // これが重要です
 })
 .then(response => response.text())
 .then(text => console.log(text));
-      
+*/      
       /*
         fetch() で HTTP リクエストを送信
         ・GET リクエスト
         ・iOS Safari で最も安定する方式
         ・レスポンス内容は読まない
       */
-    /*
       
       fetch(url)
         .then(() => {
@@ -90,7 +89,7 @@ fetch(url, {
           alert("送信失敗");
         });
     },
-    */
+    
 
     /*
       ===== 失敗時 =====
@@ -98,12 +97,12 @@ fetch(url, {
       ・GPSが取得できない
       ・通信環境が悪い
     */
-    /*
+    
     (err) => {
       console.error(err);
       alert("位置情報を取得できませんでした");
     }
-  */
+  
 
   );
 }
