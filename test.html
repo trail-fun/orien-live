@@ -10,7 +10,7 @@
     document.getElementById("postBtn").addEventListener("click", async () => {
       const resultEl = document.getElementById("result");
       resultEl.textContent = "送信中...";
-/*
+
   navigator.geolocation.getCurrentPosition(
 
 //      ===== 成功時 =====
@@ -30,7 +30,8 @@
 
         // タイムスタンプ（キャッシュ防止・ログ用）
         "&t=" + Date.now();
-*/
+      );
+
       
       try {
         const response = await fetch(GAS_URL, {
