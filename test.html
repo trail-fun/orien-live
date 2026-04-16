@@ -1,17 +1,31 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <title>位置情報送信</title>
+</head>
 <body>
-  <button id="locBtn">現在地を送信</button>
-  <p id="status">ボタンを押してください</p>
+
+  <h3>クルー選択</h3>
+  <select id="crewSelect">
+    <option value="クルーA">クルーA</option>
+    <option value="クルーB">クルーB</option>
+    <option value="クルーC">クルーC</option>
+  </select>
+
+  <button id="locBtn" style="margin-left: 10px;">現在地を送信</button>
+  
+  <p id="status">クルーを選択してボタンを押してください</p>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxub13wLW1O_dbQDI5aF33QqWG99mqWP0k0TrEgjIlRMaZe7T6BfehdOgUTzrVYvWFU/exec";
+    const GAS_URL = "ここにGASのURLを貼り付け";
 
     document.getElementById("locBtn").addEventListener("click", () => {
       const status = document.getElementById("status");
-      status.textContent = "位置情報を取得中...";
+      const crewName = document.getElementById("crewSelect").value; // 選択された値を取得
 
-      // 1. 位置情報を取得
+      status.textContent = `${crewName} の位置情報を取得中...`;
+
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
@@ -20,26 +34,26 @@
           status.textContent = `送信中... (${lat}, ${lng})`;
 
           try {
-            // 2. GASへPOST送信
             const response = await fetch(GAS_URL, {
               method: "POST",
               body: JSON.stringify({
-                name: "クルーA",
+                name: crewName, // ここにセット
                 latitude: lat,
-                longitude: lng
+                longitude: lng,
+                timestamp: new Date().toLocaleString()
               }),
               redirect: "follow"
             });
 
             const result = await response.text();
-            status.textContent = "完了: " + result;
+            status.textContent = "サーバー回答: " + result;
 
           } catch (error) {
             status.textContent = "送信失敗: " + error;
           }
         },
         (error) => {
-          status.textContent = "位置情報の取得に失敗しました: " + error.message;
+          status.textContent = "位置情報の取得に失敗: " + error.message;
         }
       );
     });
