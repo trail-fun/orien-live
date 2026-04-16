@@ -30,7 +30,7 @@
 
         // タイムスタンプ（キャッシュ防止・ログ用）
         "&t=" + Date.now();
-      );
+
 
       
       try {
@@ -50,6 +50,7 @@
       } catch (error) {
         resultEl.textContent = "エラー: " + error;
       }
+      );
     });
   </script>
 </body>
