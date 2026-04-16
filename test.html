@@ -10,7 +10,28 @@
     document.getElementById("postBtn").addEventListener("click", async () => {
       const resultEl = document.getElementById("result");
       resultEl.textContent = "送信中...";
+/*
+  navigator.geolocation.getCurrentPosition(
 
+//      ===== 成功時 =====
+//      pos には位置情報オブジェクトが入る
+    (pos) => {
+      const url =
+        API_URL +
+
+        // クルー名（固定値：クルーA）
+        "?name=クルーA" +
+
+        // 緯度（latitude）
+        "&lat=" + pos.coords.latitude +
+
+        // 経度（longitude）
+        "&lng=" + pos.coords.longitude +
+
+        // タイムスタンプ（キャッシュ防止・ログ用）
+        "&t=" + Date.now();
+*/
+      
       try {
         const response = await fetch(GAS_URL, {
           method: "POST",
