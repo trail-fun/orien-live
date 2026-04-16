@@ -1,38 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>GAS Fetch Test</title>
-</head>
 <body>
-
-  <button id="btn">GASを呼ぶ</button>
+  <button id="postBtn">POST送信</button>
   <p id="result">ここに結果が出ます</p>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzhrzDCExMgEhr-9LAfxDSRCCpFTlsFVvHOLko8j9mNFVffNFgJ1OeQVN4DoXygzPU0/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzNDH4SsUh-YA3TI1cK-dVXVuzNP9piXll-Eze_oQk6qRNuJfpeWzX3yZTklYjJpEBC/exec";
 
-    document.getElementById("btn").addEventListener("click", async () => {
+    document.getElementById("postBtn").addEventListener("click", async () => {
       const resultEl = document.getElementById("result");
-      resultEl.innerText = "通信中...";
+      resultEl.textContent = "送信中...";
 
       try {
-        // パラメータを付けて送信
-        const response = await fetch(`${GAS_URL}?name=クルーA`, {
-          method: "GET",
-          redirect: "follow" // GASではこれが必須
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          // GASのdoPostにデータを渡すための設定
+          body: JSON.stringify({
+            name: "クルーA",
+            age: 25
+          }),
+          redirect: "follow" // これがないとエラーになります
         });
 
-        // テキストとして取得
         const text = await response.text();
-        resultEl.innerText = text;
+        resultEl.textContent = text;
 
       } catch (error) {
-        resultEl.innerText = "エラーが発生しました: " + error;
-        console.error(error);
+        resultEl.textContent = "エラー: " + error;
       }
     });
   </script>
-
 </body>
 </html>
