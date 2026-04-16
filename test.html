@@ -1,55 +1,46 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <button id="postBtn">POST送信</button>
-  <p id="result">ここに結果が出ます</p>
+  <button id="locBtn">現在地を送信</button>
+  <p id="status">ボタンを押してください</p>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzNDH4SsUh-YA3TI1cK-dVXVuzNP9piXll-Eze_oQk6qRNuJfpeWzX3yZTklYjJpEBC/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxub13wLW1O_dbQDI5aF33QqWG99mqWP0k0TrEgjIlRMaZe7T6BfehdOgUTzrVYvWFU/exec";
 
-    document.getElementById("postBtn").addEventListener("click", async () => {
-      const resultEl = document.getElementById("result");
-      resultEl.textContent = "送信中...";
+    document.getElementById("locBtn").addEventListener("click", () => {
+      const status = document.getElementById("status");
+      status.textContent = "位置情報を取得中...";
 
-  navigator.geolocation.getCurrentPosition(
+      // 1. 位置情報を取得
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          status.textContent = `送信中... (${lat}, ${lng})`;
 
-//      ===== 成功時 =====
-//      pos には位置情報オブジェクトが入る
-    (pos) => {
-      const url =
-        API_URL +
+          try {
+            // 2. GASへPOST送信
+            const response = await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                name: "クルーA",
+                latitude: lat,
+                longitude: lng
+              }),
+              redirect: "follow"
+            });
 
-        // クルー名（固定値：クルーA）
-        "?name=クルーA" +
+            const result = await response.text();
+            status.textContent = "完了: " + result;
 
-        // 緯度（latitude）
-        "&lat=" + pos.coords.latitude +
-
-        // 経度（longitude）
-        "&lng=" + pos.coords.longitude +
-
-        // タイムスタンプ（キャッシュ防止・ログ用）
-        "&t=" + Date.now();
-
-
-      
-      try {
-        const response = await fetch(GAS_URL, {
-          method: "POST",
-          // GASのdoPostにデータを渡すための設定
-          body: JSON.stringify({
-            name: "クルーA",
-            age: 25
-          }),
-          redirect: "follow" // これがないとエラーになります
-        });
-
-        const text = await response.text();
-        resultEl.textContent = text;
-
-      } catch (error) {
-        resultEl.textContent = "エラー: " + error;
-      }
+          } catch (error) {
+            status.textContent = "送信失敗: " + error;
+          }
+        },
+        (error) => {
+          status.textContent = "位置情報の取得に失敗しました: " + error.message;
+        }
       );
     });
   </script>
