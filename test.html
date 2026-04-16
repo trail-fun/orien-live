@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GAS Fetch Test</title>
+</head>
+<body>
+
+  <button id="btn">GASを呼ぶ</button>
+  <p id="result">ここに結果が出ます</p>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzhrzDCExMgEhr-9LAfxDSRCCpFTlsFVvHOLko8j9mNFVffNFgJ1OeQVN4DoXygzPU0/exec";
+
+    document.getElementById("btn").addEventListener("click", async () => {
+      const resultEl = document.getElementById("result");
+      resultEl.innerText = "通信中...";
+
+      try {
+        // パラメータを付けて送信
+        const response = await fetch(`${GAS_URL}?name=クルーA`, {
+          method: "GET",
+          redirect: "follow" // GASではこれが必須
+        });
+
+        // テキストとして取得
+        const text = await response.text();
+        resultEl.innerText = text;
+
+      } catch (error) {
+        resultEl.innerText = "エラーが発生しました: " + error;
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+</html>
