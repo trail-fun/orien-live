@@ -1,69 +1,62 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>位置送信</title>
+  <meta charset="UTF-8">
+  <title>位置情報送信</title>
 </head>
 <body>
 
-<button onclick="sendLocation()">位置を送信</button>
+  <h3>クルー選択</h3>
+  <select id="crewSelect">
+    <option value="クルーA">クルーA</option>
+    <option value="クルーB">クルーB</option>
+    <option value="クルーC">クルーC</option>
+  </select>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzjdbNRo_VGpVjDZ3S4bA5BPNOyWbrVXLFcbAyon_kym2L8yrpwe5uCKIw35vUiipCS/exec";
+  <button id="locBtn" style="margin-left: 10px;">現在地を送信</button>
+  
+  <p id="status">クルーを選択してボタンを押してください</p>
 
-function sendLocation() {
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const payload = {
-        name: "クルーA",
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      };
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxub13wLW1O_dbQDI5aF33QqWG99mqWP0k0TrEgjIlRMaZe7T6BfehdOgUTzrVYvWFU/exec";
 
+    document.getElementById("locBtn").addEventListener("click", () => {
+      const status = document.getElementById("status");
+      const crewName = document.getElementById("crewSelect").value; // 選択された値を取得
 
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          name: "クルーA",
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude
-        })
-      })
-        .then(() => alert("送信しました"))
-        .catch(e => {
-          console.error(e);
-          alert("送信失敗");
-        });
+      status.textContent = `${crewName} の位置情報を取得中...`;
 
-      
-/*
-      // レスポンスは読まない（Safari安定）
-      fetch(API_URL, {
-        method: "POST",
-        headers: {
-          // Simple Request にして Preflight を回避
-          "Content-Type": "text/plain"
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          status.textContent = `送信中... (${lat}, ${lng})`;
+
+          try {
+            const response = await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                name: crewName, // ここにセット
+                latitude: lat,
+                longitude: lng,
+                timestamp: new Date().toLocaleString()
+              }),
+              redirect: "follow"
+            });
+
+            const result = await response.text();
+            status.textContent = "サーバー回答: " + result;
+
+          } catch (error) {
+            status.textContent = "送信失敗: " + error;
+          }
         },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
-        // 成功したとみなす（GAS用途ではこれでOK）
-        alert("送信しました");
-      })
-      .catch(err => {
-        console.error("送信エラー:", err);
-        alert("送信に失敗しました");
-      });
-      */
-    },
-    (err) => {
-      console.error("位置情報エラー:", err);
-      alert("位置情報を取得できませんでした");
-    }
-  );
-}
-</script>
-
+        (error) => {
+          status.textContent = "位置情報の取得に失敗: " + error.message;
+        }
+      );
+    });
+  </script>
 </body>
 </html>
