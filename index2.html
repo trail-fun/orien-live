@@ -59,6 +59,7 @@
   /********************
    * マーカー更新処理
    ********************/
+  /*
   function loadMarkers() {
     fetch(DATA_URL + "?t=" + Date.now()) // キャッシュ回避
       .then(response => response.json())
@@ -79,7 +80,17 @@
         console.error("位置データ取得エラー", error);
       });
   }
-  
+  */
+    async function loadMarkers() {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyZm-IIzgbk8KaX12tBHtgcX4w7cejKdR1SQZgukdC6Zl5M5e3N-DbVX5epVlzvgw/exec");
+      const locations = await response.json();
+      
+      locations.forEach(loc => {
+        L.marker([loc.lat, loc.lng])
+          .addTo(map)
+          .bindPopup(`${loc.name}<br>${loc.time}`);
+      });
+    }  
   /********************
    * 初回読み込み & 自動更新
    ********************/
