@@ -66,6 +66,7 @@
   
      // 1. CP（コントロールポイント）の表示
     data.forEach(cp => {
+      console.write(cp.order);
       const pos = [cp.lat, cp.lng];
       if (cp.order === 's') {
         // スタート：△
