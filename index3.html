@@ -61,12 +61,12 @@
    * マーカー更新処理
    ********************/
   async function loadMarkers() {
-  const response = await fetch("https://script.google.com/macros/s/AKfycbz4K3Wckd4-ZfBGCMqAZf5maDSLynHxNcpbT-fmTl26KyxlWf5bwbJcp6ftBIvjWj_m/exec");
+  const response = await fetch("https://script.google.com/macros/s/AKfycbxatv2OWlyP6Rlrz80Out_CHCNnIIZy7RqqaiFDJRWecHRDnwbBNoiLIxU_LoEzb2Se/exec");
   const data = await response.json();
   
      // 1. CP（コントロールポイント）の表示
     data.forEach(cp => {
-      console.write(cp.order);
+//      console.write(cp.order);
       const pos = [cp.lat, cp.lng];
       if (cp.order === 's') {
         // スタート：△
