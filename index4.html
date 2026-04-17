@@ -2,93 +2,72 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>orien-live｜クルー位置マップ</title>
+  <title>orien-live｜軌跡再生</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- 以下LeafletのJavaScriptとCSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://cloudflare.com"></script>
-
+  <link rel="stylesheet" href="https://unpkg.com" />
+  <script src="https://unpkg.com"></script>
+  <script src="https://cloudflare.com"></script>
+  <script src="https://unpkg.com"></script>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      width: 100%;
-      height: 100vh;
-    }
+    body { margin: 0; padding: 0; }
+    #map { width: 100%; height: 90vh; }
+    .ui { height: 10vh; display: flex; align-items: center; padding: 0 20px; gap: 15px; background: #fff; }
   </style>
 </head>
 <body>
 
+<div class="ui">
+  <button id="btn" style="padding: 10px 20px;">▶ 再生</button>
+  <input type="range" id="range" min="1" max="100" value="20">
+  <span><span id="speed">20</span>倍速</span>
+</div>
 <div id="map"></div>
 
 <script>
-  /********************
-   * 設定
-   ********************/
-  const CENTER_LAT = 34.4;
-  const CENTER_LNG = 132.4;
-  const ZOOM_LEVEL = 12;
-
-  const DATA_URL = "crew_locations.json";
-  const REFRESH_INTERVAL = 60000; // 1分（ミリ秒）
-
-   /********************
-   * 地図初期化
-   ********************/
-  const map = L.map("map").setView(
-    [CENTER_LAT, CENTER_LNG],
-    ZOOM_LEVEL
-  );
-
-  // 国土地理院地図
-  L.tileLayer(
-    "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
-    {
-      attribution: "地図情報 © 国土地理院"
-    }
-  ).addTo(map);
-
-
-/**/
-  // マーカー専用レイヤー
-  const markerLayer = L.layerGroup().addTo(map);
-
-  /********************
-   * マーカー更新処理
-   ********************/
-  async function loadMarkers() {
-  const response = await fetch("https://script.google.com/macros/s/AKfycbxatv2OWlyP6Rlrz80Out_CHCNnIIZy7RqqaiFDJRWecHRDnwbBNoiLIxU_LoEzb2Se/exec");
-  const data = await response.json();
+  // GASのURL
+  const GAS_URL = "https://google.com";
   
-     // 1. CP（コントロールポイント）の表示
-    data.forEach(cp => {
-//      console.write(cp.order);
-      const pos = [cp.lat, cp.lng];
-      if (cp.order === 's') {
-        // スタート：△
-        L.polygon([[cp.lat+0.0006, cp.lng], [cp.lat-0.0004, cp.lng-0.0005], [cp.lat-0.0004, cp.lng+0.0005]], 
-          {color: 'red', fill: false, weight: 3}).addTo(map).bindTooltip("Start");
-      } else if (cp.order === 'g') {
-        // ゴール：◎
-        L.circle(pos, {radius: 25, color: 'red', fill: false, weight: 3}).addTo(map);
-        L.circle(pos, {radius: 15, color: 'red', fill: false, weight: 3}).addTo(map).bindTooltip("Goal");
-      } else {
-        // 通常CP：⭕️
-        L.circle(pos, {radius: 20, color: 'red', fill: false, weight: 3}).addTo(map).bindTooltip(cp.name);
-      }
+  const map = L.map("map").setView([34.4, 132.4], 13);
+  let player;
+
+  L.tileLayer("https://gsi.go.jp{z}/{x}/{y}.png", {
+    attribution: "© 国土地理院"
+  }).addTo(map);
+
+  async function load() {
+    const res = await fetch(GAS_URL);
+    const data = await res.json(); // { logs: [{name: "A", xml: "..."}, ...] }
+
+    // 同時スタート補正：各GPXを相対時間（0ms〜）に変換
+    const tracks = data.logs.map(log => {
+      const gpx = new gpxParser();
+      gpx.parse(log.xml);
+      const pts = gpx.tracks[0].points;
+      const t0 = new Date(pts[0].time).getTime();
+      return pts.map(p => ({
+        lat: p.lat, lng: p.lon,
+        time: new Date(p.time).getTime() - t0
+      }));
     });
-}  
-  /********************
-   * 初回読み込み & 自動更新
-   ********************/
-  loadMarkers();                         // ページ表示時
-  setInterval(loadMarkers, REFRESH_INTERVAL); // 定期更新
 
+    // 再生プレイヤー初期化
+    player = new L.TrackPlayer(tracks, {
+      speed: 20,
+      marker: (i) => L.divIcon({
+        html: `<b style="color:blue; white-space:nowrap;">🏃${data.logs[i].name}</b>`
+      })
+    }).addTo(map);
+  }
+
+  document.getElementById('btn').onclick = () => player && player.start();
+  
+  document.getElementById('range').oninput = (e) => {
+    const v = Number(e.target.value);
+    document.getElementById('speed').innerText = v;
+    if(player) player.setSpeed(v);
+  };
+
+  load();
 </script>
-
 </body>
 </html>
