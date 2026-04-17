@@ -65,7 +65,7 @@
   const data = await response.json();
   
      // 1. CP（コントロールポイント）の表示
-    data.cps.forEach(cp => {
+    data.forEach(cp => {
       const pos = [cp.lat, cp.lng];
       if (cp.order === 's') {
         // スタート：△
