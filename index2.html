@@ -81,6 +81,7 @@
       });
   }
   */
+/*
     async function loadMarkers() {
       const response = await fetch("https://script.google.com/macros/s/AKfycbyZm-IIzgbk8KaX12tBHtgcX4w7cejKdR1SQZgukdC6Zl5M5e3N-DbVX5epVlzvgw/exec");
       const locations = await response.json();
@@ -91,6 +92,25 @@
           .bindPopup(`${loc.name}<br>${loc.time}`);
       });
     }  
+    */
+  async function loadMarkers() {
+  const response = await fetch("https://script.google.com/macros/s/AKfycbyZm-IIzgbk8KaX12tBHtgcX4w7cejKdR1SQZgukdC6Zl5M5e3N-DbVX5epVlzvgw/exec");
+  const locations = await response.json();
+  
+  locations.forEach(loc => {
+    // L.marker ではなく L.circleMarker を使用
+    L.circleMarker([loc.lat, loc.lng], {
+      radius: 12,           // ⭕️の大きさ
+      color: '#ff4500',     // 枠線の色（オレンジレッドなど）
+      weight: 3,            // 枠線の太さ
+      opacity: 0.8,         // 枠線の透明度
+      fillColor: '#ff4500', // 中の色
+      fillOpacity: 0.2      // 中の透明度（ここを下げると「透明な⭕️」に見えます）
+    })
+    .addTo(map)
+    .bindPopup(`${loc.name}<br>${loc.time}`);
+  });
+}  
   /********************
    * 初回読み込み & 自動更新
    ********************/
